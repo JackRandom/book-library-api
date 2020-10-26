@@ -30,14 +30,15 @@ describe('/books', () => {
       });
     });
   });
-
+  // Book.create({ title: 'Horus Rising', author: 'Dan Abnett', genre: 'Space Operas', isbn: '1789992176' }),
+  // Book.create({ title: 'False Gods', author: 'Graham McNeill', genre: 'Science Fiction Space Operas', isbn: '1849707464' }),
   describe('with records in the database', () => {
-    let book;
+    let books;
 
     beforeEach(async () => {
-      await book.destroy({ where: {} });
+      await Book.destroy({ where: {} });
 
-      book = await Promise.all([
+      books = await Promise.all([
         Book.create({
           title: 'Jurassic Park',
           author: 'Michael Chrichton',
@@ -50,14 +51,15 @@ describe('/books', () => {
     });
 
     describe('GET /books', () => {
-      it('gets all book records', async () => {
+      it('gets all books records', async () => {
         const response = await request(app).get('/books');
 
         expect(response.status).to.equal(200);
         expect(response.body.length).to.equal(3);
 
         response.body.forEach((book) => {
-          const expected = book.find((a) => a.id === book.id);
+          console.log(book);
+          const expected = books.find((a) => a.id === book.id);
 
           expect(book.tile).to.equal(expected.tile);
           expect(book.author).to.equal(expected.author);
@@ -68,7 +70,7 @@ describe('/books', () => {
     });
 
     describe('GET /books/:id', () => {
-      xit('gets books record by id', async () => {
+      it('gets books record by id', async () => {
         const book = books[0];
         const response = await request(app).get(`/books/${book.id}`);
 
@@ -79,7 +81,7 @@ describe('/books', () => {
         expect(response.body.isbn).to.equal(book.isbn);
       });
 
-      xit('returns a 404 if the book does not exist', async () => {
+      it('returns a 404 if the book does not exist', async () => {
         const response = await request(app).get('/books/12345');
 
         expect(response.status).to.equal(404);
@@ -88,7 +90,7 @@ describe('/books', () => {
     });
 
     describe('PATCH /books/:id', () => {
-      xit('updates books genre by id', async () => {
+      it('updates books genre by id', async () => {
         const book = books[0];
         const response = await request(app)
           .patch(`/books/${book.id}`)
@@ -98,10 +100,10 @@ describe('/books', () => {
         });
 
         expect(response.status).to.equal(200);
-        expect(updatedBookRecord.email).to.equal('Fantasy');
+        expect(updatedBookRecord.genre).to.equal('Fantasy');
       });
 
-      xit('returns a 404 if the book does not exist', async () => {
+      it('returns a 404 if the book does not exist', async () => {
         const response = await request(app)
           .patch('/books/12345')
           .send({ genre: 'some_new_genre' });
@@ -112,7 +114,7 @@ describe('/books', () => {
     });
 
     describe('DELETE /books/:id', () => {
-      xit('deletes rbook record by id', async () => {
+      it('deletes rbook record by id', async () => {
         const book = books[0];
         const response = await request(app).delete(`/books/${book.id}`);
         const deletedBook = await Book.findByPk(book.id, { raw: true });
@@ -121,7 +123,7 @@ describe('/books', () => {
         expect(deletedBook).to.equal(null);
       });
 
-      xit('returns a 404 if the book does not exist', async () => {
+      it('returns a 404 if the book does not exist', async () => {
         const response = await request(app).delete('/books/12345');
         expect(response.status).to.equal(404);
         expect(response.body.error).to.equal('The book could not be found.');
