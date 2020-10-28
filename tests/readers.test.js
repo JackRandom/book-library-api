@@ -25,6 +25,28 @@ describe('/readers', () => {
         expect(newReaderRecord.email).to.equal('future_ms_darcy@gmail.com');
         expect(newReaderRecord.password).to.equal('testpassword');
       });
+
+      it('it returns a 400 and does not create a new Reader if the email is missing', async () => {
+        const response = await request(app).post('/readers').send({
+          name: 'Barry Beggs',
+          email: 'future_mr_beggsgmail.com',
+          password: '12345678',
+        });
+
+        expect(response.status).to.equal(400);
+        expect(response.body).to.equal('the email address is invalid');
+      });
+
+      it('it returns a 400 and does not create a new Reader if the password is not a minimum of 8 characters', async () => {
+        const response = await request(app).post('/readers').send({
+          name: 'Barry Beggs',
+          email: 'future_mr_beggs@gmail.com',
+          password: '1234567',
+        });
+
+        expect(response.status).to.equal(400);
+        expect(response.body).to.equal('The Password is invalid, minimum of 8 characters required.');
+      });
     });
   });
 
@@ -40,8 +62,8 @@ describe('/readers', () => {
           email: 'future_ms_darcy@gmail.com',
           password: 'testpassword',
         }),
-        Reader.create({ name: 'Arya Stark', email: 'vmorgul@me.com' }),
-        Reader.create({ name: 'Lyra Belacqua', email: 'darknorth123@msn.org' }),
+        Reader.create({ name: 'Arya Stark', email: 'vmorgul@me.com', password: 'testpasswrd' }),
+        Reader.create({ name: 'Lyra Belacqua', email: 'darknorth123@msn.org', password: 'testpssword' }),
       ]);
     });
 
@@ -57,6 +79,7 @@ describe('/readers', () => {
 
           expect(reader.name).to.equal(expected.name);
           expect(reader.email).to.equal(expected.email);
+          expect(reader.password).to.equal(expected.password);
         });
       });
     });
@@ -69,6 +92,7 @@ describe('/readers', () => {
         expect(response.status).to.equal(200);
         expect(response.body.name).to.equal(reader.name);
         expect(response.body.email).to.equal(reader.email);
+        expect(response.body.password).to.equal(reader.password);
       });
 
       it('returns a 404 if the reader does not exist', async () => {
