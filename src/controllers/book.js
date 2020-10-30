@@ -11,7 +11,15 @@ const createBook = (req, res) => {
 
   Book
     .create(newBook)
-    .then(newBookCreated => res.status(201).json(newBookCreated));
+    .then(newBookCreated => res.status(201).json(newBookCreated))
+    .catch(error => {
+      console.log(error);
+      if (error.errors[0].type === 'notNull Violation') {
+        res.status(400).json(error.errors[0].message);
+      }
+      else { res.status(500).json(error) };
+    })
+
 }
 
 const updateBook = (req, res) => {

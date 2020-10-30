@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 const { expect } = require('chai');
 const request = require('supertest');
-// const { Reader } = require('../src/models');
 const { Book } = require('../src/models');
 const app = require('../src/app');
 
@@ -28,10 +27,31 @@ describe('/books', () => {
         expect(newBookRecord.genre).to.equal('Science Fiction');
         expect(newBookRecord.isbn).to.equal('0099282917');
       });
+
+      it('it returns a 400 and does not create a new Book if the title is missing', async () => {
+        const response = await request(app).post('/books').send({
+          author: 'Michael Chrichton',
+          genre: 'Science Fiction',
+          isbn: '0099282917',
+        });
+
+        expect(response.status).to.equal(400);
+        expect(response.body).to.equal('the title is missing, please add a title');
+      });
+
+      it('it returns a 400 and does not create a new Book if there is no author', async () => {
+        const response = await request(app).post('/books').send({
+          title: 'Jurassic Park',
+          genre: 'Science Fiction',
+          isbn: '0099282917',
+        });
+
+        expect(response.status).to.equal(400);
+        expect(response.body).to.equal('the author is missing, please add an author');
+      });
     });
   });
-  // Book.create({ title: 'Horus Rising', author: 'Dan Abnett', genre: 'Space Operas', isbn: '1789992176' }),
-  // Book.create({ title: 'False Gods', author: 'Graham McNeill', genre: 'Science Fiction Space Operas', isbn: '1849707464' }),
+
   describe('with records in the database', () => {
     let books;
 
