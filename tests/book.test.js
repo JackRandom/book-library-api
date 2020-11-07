@@ -36,7 +36,7 @@ describe('/books', () => {
         });
 
         expect(response.status).to.equal(400);
-        expect(response.body).to.equal('the title is missing, please add a title');
+        expect(response.body.errors[0]).to.equal('the title is missing, please add a title');
       });
 
       it('it returns a 400 and does not create a new Book if there is no author', async () => {
@@ -47,8 +47,9 @@ describe('/books', () => {
         });
 
         expect(response.status).to.equal(400);
-        expect(response.body).to.equal('the author is missing, please add an author');
+        expect(response.body.errors[0]).to.equal('the author is missing, please add an author');
       });
+      // add more test funcionality to test if there is not author and title
     });
   });
 

@@ -46,11 +46,13 @@ const createItem = (res, model, item) => {
 
     return Model.create(item)
         .then((newItemCreated) => {
+            console.log(newItemCreated);
             const itemWithoutPassword = removePassword(newItemCreated.dataValues);
 
             res.status(201).json(itemWithoutPassword);
         })
         .catch((error) => {
+            // console.log(error, 'error');
             const errorMessages = error.errors.map((e) => e.message);
 
             return res.status(400).json({ errors: errorMessages });
